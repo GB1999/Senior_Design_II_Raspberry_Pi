@@ -1,0 +1,34 @@
+#:kivy 2.0.0
+
+<DisplayScreen>:
+	rgba: (0,0,0,1)
+	canvas.before:
+		Color:
+			rgba: root.rgba
+		Rectangle:
+			size: self.size
+			pos: self.pos
+
+    FloatLayout:
+        pos: 0,0
+        size: root.width, root.height
+		id: float_layout
+        GridLayout:
+            cols:1
+            rows:2
+            pos_hint: {'x': .3, 'y': .3}
+            size_hint: None, None
+            size: root.width * .4, root.height * .4
+			
+            Label:
+                id: transcription_label
+                text: "Mask is now running"
+                font_size: 128
+				color: 1,1,1,1
+				
+            Label:
+                id: confidence_label
+                text: "0"
+                color: 1,1,1,1
+                font_size: 128
+				
