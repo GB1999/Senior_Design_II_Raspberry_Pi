@@ -15,7 +15,7 @@ import wave
 #import webrtcvad
 #from halo import Halo
 #from scipy import signal
-from transcription import *
+from transcription_service import *
 from gatt_server import *
 import json
 
@@ -24,8 +24,9 @@ logging.basicConfig(level=20)
 
 
 
-shared_queue = queue.Queue()
+transcript_queue = queue.Queue()
 app_queue = queue.Queue()
+language_queue = queue.Queue()
 
 start_time = 0
 
@@ -34,11 +35,14 @@ start_time = 0
 class DisplayScreen(Widget):
     def update(self,dt):
         # create variables for labels
-        if not shared_queue.empty():
-            message, confidence = shared_queue.get()
+        if not transcript_queue.empty():
+            message, confidence = transcript_queue.get()
             self.ids.transcription_label.text = message
             #self.ids.transcription_label.color = [0,abs(int(confidence))/100,0,1]
-            self.ids.confidence_label.text = str(confidence)
+            self.ids.confidence_label.text = "CONFIDENCE: {:0.4f}%".format(confidence*100)
+            print(type(confidence))
+            print(confidence)
+            print(int(confidence))
         if not app_queue.empty():
             update_dict = app_queue.get()
             self.ids.transcription_label.font_size = int(update_dict['font_size'])
@@ -68,6 +72,7 @@ def RunServer():
     app.add_service(AirHumidityTempService(0))
     app.add_service(FanService(1))
     app.add_service(VolumeService(2))
+    app.add_service(LanguageSelectionService(3, language_queue))
     app.register()
 
     adv = ThermometerAdvertisement(0)
@@ -81,7 +86,7 @@ def RunServer():
    
 def RunTranscription():
     ts = TranscriptionService()
-    ts.run(shared_queue)
+    ts.run(transcript_queue, language_queue)
 
 def main():
     

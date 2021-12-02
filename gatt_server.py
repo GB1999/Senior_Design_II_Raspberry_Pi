@@ -410,23 +410,24 @@ class FanToggleCharacteristic(Characteristic):
         except(e):
             print(e)
 
-class FontService(Service):
+class LanguageSelectionService(Service):
     
 
-    def __init__(self, index):
-        self.FONT_SVC_UUID = "9a1aefb1-3221-11ec-8d3d-0242ac130003"
-        Service.__init__(self, index, self.FONT_SVC_UUID, True)
-        self.add_characteristic(FontSizeCharacteristic(self))
+    def __init__(self, index, queue):
+        self.LANG_SELECT_SVC_UUID = "F2061782-5345-11EC-BF63-0242AC130002"
+        Service.__init__(self, index, self.LANG_SELECT_SVC_UUID, True)
+        self.add_characteristic(LanguageSelectCharacteristic(self, queue))
 
-class FontSizeCharacteristic(Characteristic):
+class LanguageSelectCharacteristic(Characteristic):
     
 
-    def __init__(self, service):
-        self.FONT_SIZE_CHARACTERISTIC_UUID = "40146758-3237-11EC-8D3D-0242AC130003"
+    def __init__(self, service, queue):
+        self.LANGUAGE_SELECT_CHARACTERISTIC_UUID = "F2061783-5345-11EC-BF63-0242AC130002"
         Characteristic.__init__(
-                self, self.FONT_SIZE_CHARACTERISTIC_UUID,
+                self, self.LANGUAGE_SELECT_CHARACTERISTIC_UUID,
                 ["write-without-response"], service)
-        self.queue = queue    
+        self.queue = queue
+        print("----initializing language characteristic")
         
     
     def WriteValue(self, value, options):
@@ -434,8 +435,12 @@ class FontSizeCharacteristic(Characteristic):
             #val = str(value[0]).upper()
             #print(value)
             #print(value)
-            val = ord(bytes(value))
-            self.write_pot((val))
+            print("recieved data")
+            #print(value)
+            chars = [str(v) for v in value]
+            val = "".join(chars)
+            print(val)
+            self.queue.put(val)
             #print(hex(val))
         except(e):
             print(e)

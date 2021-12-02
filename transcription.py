@@ -1,4 +1,3 @@
-
 import websockets
 import asyncio
 import base64
@@ -85,4 +84,3 @@ class TranscriptionService:
             
     def run(self, queue):
         asyncio.run(self.send_receive(queue))
-        
