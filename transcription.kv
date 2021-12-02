@@ -1,0 +1,42 @@
+#:kivy 2.0.0
+<ScaleLabel@Label>:
+    _scale: 1. if self.texture_size[1] < self.height else float(self.height) / self.texture_size[1]
+    canvas.before:
+        PushMatrix
+        Scale:
+            origin: self.center
+            x: self._scale or 1.
+            y: self._scale or 1.
+    canvas.after:
+        PopMatrix
+
+<DisplayScreen>:
+	rgba: (0,0,0,1)
+	canvas.before:
+		Color:
+			rgba: root.rgba
+		Rectangle:
+			size: self.size
+			pos: self.pos
+
+    FloatLayout:
+        pos: 0,0
+        size: root.width, root.height
+		id: float_layout
+        BoxLayout:
+            size: root.width * .4, root.height * .4
+            orientation: 'vertical'
+            ScaleLabel:
+                id: transcription_label
+                text: "Mask is now running"
+                text_size: self.width, None
+                font_size: 130
+				color: 1,1,1,1
+				valign: 'middle'
+				halign: 'center'
+
+            Label:
+                id: confidence_label
+                text: "CONFIDENCE: - "
+                color: 1,1,1,1
+                font_size: 70
